@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartinha ♥</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream:    #F5F0E8;
+    --parchment:#EDE4D0;
+    --ink:      #1C1A17;
+    --sepia:    #7A5C3A;
+    --gold:     #B8943F;
+    --blush:    #C97B6A;
+    --sky:      #7AAEC4;
+    --heart:    #C0392B;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── CAPA ── */
+  #capa {
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--parchment);
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+  }
+  #capa.ativa { display: flex; }
+
+  #capa::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(185,148,63,.13) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(122,174,196,.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* estrelas / corações decorativos */
+  .deco {
+    position: absolute;
+    pointer-events: none;
+    opacity: .45;
+    font-size: 1.4rem;
+    animation: floatDeco 6s ease-in-out infinite;
+  }
+  .deco:nth-child(1)  { top: 8%;  left: 7%;  animation-delay: 0s;   font-size:1.8rem; }
+  .deco:nth-child(2)  { top: 12%; right: 9%; animation-delay: 1.2s; font-size:1.1rem; }
+  .deco:nth-child(3)  { top: 70%; left: 5%;  animation-delay: 2.1s; }
+  .deco:nth-child(4)  { top: 80%; right: 6%; animation-delay: 0.7s; font-size:1.1rem; }
+  .deco:nth-child(5)  { top: 45%; left: 3%;  animation-delay: 3s;   font-size:1rem; }
+  .deco:nth-child(6)  { top: 30%; right: 4%; animation-delay: 1.8s; font-size:.9rem; }
+
+  @keyframes floatDeco {
+    0%,100% { transform: translateY(0) rotate(-5deg); }
+    50%      { transform: translateY(-10px) rotate(5deg); }
+  }
+
+  .capa-titulo {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: clamp(3rem, 10vw, 6rem);
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.05;
+    position: relative;
+    z-index: 1;
+  }
+
+  .capa-subtitulo {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1rem, 3.5vw, 1.5rem);
+    color: var(--sepia);
+    margin-top: .3rem;
+    letter-spacing: .08em;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .capa-data {
+    display: inline-block;
+    border: 1.5px solid var(--gold);
+    border-radius: 4px;
+    padding: .25rem 1.2rem;
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-top: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .capa-data::before,
+  .capa-data::after {
+    content: '✦';
+    margin: 0 .4rem;
+    font-size: .75rem;
+  }
+
+  .btn-abrir {
+    margin-top: 2.5rem;
+    padding: .85rem 2.8rem;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 2px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: background .25s, transform .15s;
+    letter-spacing: .04em;
+  }
+  .btn-abrir:hover { background: var(--sepia); transform: translateY(-2px); }
+
+  /* avião animado */
+  .aviao {
+    position: absolute;
+    bottom: 12%;
+    left: -60px;
+    font-size: 1.8rem;
+    animation: voo 8s linear infinite;
+    opacity: .5;
+  }
+  @keyframes voo {
+    0%   { left: -60px; transform: rotate(-5deg); }
+    100% { left: 110%;  transform: rotate(-5deg); }
+  }
+
+  /* ── SEÇÕES GERAIS ── */
+  .secao {
+    display: none;
+    min-height: 100vh;
+    padding: 3rem 1.5rem 4rem;
+    max-width: 720px;
+    margin: 0 auto;
+    animation: fadeUp .7s ease both;
+  }
+  .secao.ativa { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* cabeçalho das seções */
+  .sec-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: .8rem;
+  }
+  .sec-label {
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .sec-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: var(--parchment);
+    -webkit-text-stroke: 1px var(--gold);
+    line-height: 1;
+  }
+
+  /* ── VÍDEO ── */
+  .video-wrap {
+    position: relative;
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 8px 32px rgba(0,0,0,.22);
+    margin-bottom: 1.5rem;
+  }
+  .video-wrap video {
+    width: 100%;
+    display: block;
+    max-height: 70vh;
+    object-fit: contain;
+  }
+
+  .video-nota {
+    font-family: 'Caveat', cursive;
+    font-size: 1.1rem;
+    color: var(--sepia);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+
+  /* ── TEXTO DA CARTA ── */
+  .carta {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    padding: 2.5rem 2rem 2rem;
+    position: relative;
+    box-shadow: 2px 4px 18px rgba(0,0,0,.07);
+    line-height: 1;
+  }
+  /* linhas pautadas sutis */
+  .carta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 31px,
+      rgba(122,92,58,.08) 31px,
+      rgba(122,92,58,.08) 32px
+    );
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .carta-data {
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    color: var(--sky);
+    text-align: right;
+    margin-bottom: 1.2rem;
+    position: relative;
+    text-decoration: underline;
+  }
+
+  .carta p {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.15rem, 3.2vw, 1.35rem);
+    color: var(--ink);
+    line-height: 2rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+
+  .carta p.citacao {
+    color: var(--sky);
+    font-style: italic;
+    font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+    border-left: 3px solid var(--sky);
+    padding-left: 1rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .carta p.reticencias {
+    color: var(--sepia);
+    font-style: italic;
+    font-size: 1.3rem;
+  }
+
+  /* destaque ALÉM DO HORIZONTE */
+  .carta .horizonte {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 700;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    line-height: 1.55;
+    margin: 1.4rem 0 1rem;
+    position: relative;
+  }
+  .carta .horizonte span {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* poesia final */
+  .carta .poesia {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.15rem, 3.2vw, 1.35rem);
+    color: var(--ink);
+    line-height: 2rem;
+    margin-bottom: .5rem;
+  }
+
+  .carta .assinatura {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.2rem, 3.5vw, 1.55rem);
+    font-weight: 700;
+    color: var(--heart);
+    margin-top: 1.6rem;
+    line-height: 1.7;
+  }
+
+  /* ── BOTÃO PRÓXIMO ── */
+  .nav-btn {
+    display: block;
+    margin: 2.5rem auto 0;
+    padding: .8rem 2.4rem;
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: var(--ink);
+    transition: background .2s, color .2s, transform .15s;
+    letter-spacing: .04em;
+  }
+  .nav-btn:hover { background: var(--ink); color: var(--cream); transform: translateY(-2px); }
+
+  /* ── INTERRUPÇÃO ── */
+  #sec-interrupcao {
+    text-align: center;
+  }
+  .interrupcao-titulo {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    color: var(--sepia);
+    margin-bottom: .5rem;
+    font-style: italic;
+  }
+  .interrupcao-sub {
+    font-family: 'Lato', sans-serif;
+    font-size: .9rem;
+    color: var(--sepia);
+    opacity: .7;
+    margin-bottom: 2rem;
+    letter-spacing: .06em;
+  }
+
+  /* ── FIM ── */
+  #sec-fim {
+    text-align: center;
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    animation: fadeUp .7s ease both;
+  }
+  #sec-fim.ativa { display: flex; }
+
+  .fim-coracao {
+    font-size: 4rem;
+    animation: batimento 1.2s ease-in-out infinite;
+    margin-bottom: 1rem;
+  }
+  @keyframes batimento {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+  }
+  .fim-msg {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    color: var(--sepia);
+    max-width: 480px;
+  }
+
+  /* ── PROGRESS DOTS ── */
+  .dots {
+    position: fixed;
+    right: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    z-index: 100;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--sepia);
+    opacity: .25;
+    transition: opacity .3s, transform .3s;
+    cursor: pointer;
+  }
+  .dot.ativo { opacity: 1; transform: scale(1.4); }
+
+  /* ── RESPONSIVO ── */
+  @media (max-width: 500px) {
+    .carta { padding: 2rem 1.2rem 1.5rem; }
+    .dots  { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PROGRESS DOTS -->
+<nav class="dots" aria-label="Navegação">
+  <div class="dot ativo" onclick="irPara('capa')"            title="Capa"></div>
+  <div class="dot"       onclick="irPara('sec-video1')"      title="Música"></div>
+  <div class="dot"       onclick="irPara('sec-parte1')"      title="Parte 1"></div>
+  <div class="dot"       onclick="irPara('sec-interrupcao')" title="Interrupção"></div>
+  <div class="dot"       onclick="irPara('sec-parte2')"      title="Parte 2"></div>
+</nav>
+
+<!-- ══ CAPA ══ -->
+<section id="capa">
+  <span class="deco">★</span>
+  <span class="deco">♥</span>
+  <span class="deco">♥</span>
+  <span class="deco">★</span>
+  <span class="deco">✦</span>
+  <span class="deco">♥</span>
+
+  <div class="capa-titulo">
+    Uma cartinha<br>
+    <em style="font-size:clamp(1.8rem,5vw,3rem);font-weight:400;">de amor</em>
+  </div>
+  <div class="capa-subtitulo">para a minha gatinha</div>
+  <div class="capa-data">05.07.2026</div>
+
+  <button class="btn-abrir" onclick="irPara('sec-video1')">abrir cartinha ♥</button>
+
+  <div class="aviao">✈</div>
+</section>
+
+<!-- ══ VÍDEO 1 — música ══ -->
+<section id="sec-video1" class="secao">
+  <div class="sec-header">
+    <span class="sec-num">01</span>
+    <span class="sec-label">a música que começou tudo</span>
+  </div>
+
+  <div class="video-wrap">
+    <video controls playsinline>
+      <source src="video_1.mp4" type="video/mp4">
+      Seu navegador não suporta vídeo.
+    </video>
+  </div>
+  <p class="video-nota">♪ Bloco "Chega o Rei" — Evento Participativo 4 da Centralidade Abílio Machado — Programa Perto de Casa, 05/07</p>
+
+  <button class="nav-btn" onclick="irPara('sec-parte1')">ler a cartinha →</button>
+</section>
+
+<!-- ══ PARTE 1 ══ -->
+<section id="sec-parte1" class="secao">
+  <div class="sec-header">
+    <span class="sec-num">02</span>
+    <span class="sec-label">a inspiração</span>
+  </div>
+
+  <div class="carta">
+    <p class="carta-data">05/07</p>
+
+    <p class="citacao">
+      "Em Belo Horizonte, existe um lugar<br>
+      bonito e tranquilo,<br>
+      pra gente se amar"
+    </p>
+
+    <p>
+      Assim tocava e cantava o Bloco "Chega o Rei" no último evento do Perto de Casa.
+    </p>
+
+    <p>
+      Mais um ciclo que começamos e encerramos juntos. Chega a assustar o tanto de coisa que já vivemos um ao lado do outro. E o tanto de coisa que se descortina no horizonte.
+    </p>
+
+    <p>
+      Nesse momento um tanto quente e caótico, lembro que fui descoberto pela minha gatinha em minhas anotações planejantes de uma cartinha para ela. Já faz um tempo que sinto uma necessidade, diria até uma saudade, de te escrever.
+    </p>
+
+    <p>
+      Queria te dizer que, no meio de todo esse caos que é a nossa vida, sinto o nosso amor transbordar, a cada pequena loucurinha que fazemos juntos, seja uma viagem, um passeio, uma conversa aleatória; e também a cada singelo momento do dia-a-dia em sua companhia, seja um cafezin, um dengo ou um abracin de 43 segundos.
+    </p>
+
+    <p>
+      Ao mesmo tempo, é difícil, no meio desse caos, conseguir parar, respirar e colocar em tinta e papel o que se passa nesse coração. Acho simbólico que escolhi justamente esse momento caótico, e quente, para te escrever. No mesmo espírito abraçante do caos que temos encarnado, superei vários TOCs pra te escrever esta cartinha.
+    </p>
+
+    <p>
+      Primeiro joguei para longe a espera do momento e da inspiração perfeitos. Superei uma afronta ao sistema que é usar o caderninho de trabalho para coisas pessoais. Ao ver que estava escrevendo no verso do planejamento da finalização do BDG, foi todo um quebra-cabeça cognitivo pra decidir reiniciar a cartinha na página seguinte.
+    </p>
+
+    <p>
+      Toda em digressão ilustra muito bem uma das coisas que mais gosto em nós dois: o tanto que a gente se entende, mesmo nas nossas esquisitices mais esquisitinhas. O tanto que "a gente se fala no olhar" está longe de ser uma hipérbole, já que é um ritual cotidiano.
+    </p>
+
+    <p>
+      Começa a bater o TOC de que a inspiração já está passando.
+    </p>
+
+    <p class="reticencias">Olho...</p>
+  </div>
+
+  <button class="nav-btn" onclick="irPara('sec-interrupcao')">continuar →</button>
+</section>
+
+<!-- ══ INTERRUPÇÃO ══ -->
+<section id="sec-interrupcao" class="secao" style="text-align:center;">
+  <div class="sec-header" style="justify-content:center;border-bottom-color:var(--blush);">
+    <span class="sec-num" style="-webkit-text-stroke-color:var(--blush);">03</span>
+    <span class="sec-label" style="color:var(--blush);">a interrupção</span>
+  </div>
+
+  <p class="interrupcao-titulo">... e então aconteceu isso:</p>
+
+  <div class="video-wrap">
+    <video controls playsinline>
+      <source src="video_2.mp4" type="video/mp4">
+      Seu navegador não suporta vídeo.
+    </video>
+  </div>
+
+  <button class="nav-btn" onclick="irPara('sec-parte2')">e a cartinha continua →</button>
+</section>
+
+<!-- ══ PARTE 2 ══ -->
+<section id="sec-parte2" class="secao">
+  <div class="sec-header">
+    <span class="sec-num">04</span>
+    <span class="sec-label">o final</span>
+  </div>
+
+  <div class="carta">
+    <p class="reticencias">
+      ... ia dizer para frente, mas fui interrompido pela Júnia para entrar em uma roda aleatoríssima.
+    </p>
+
+    <p>
+      Músicas brasileira, carnaval, idosos, jovens, crianças e adultos, pessoas do trabalho e da comunidade, cantando e dançando de mãos dadas, cada um com seus pensamentos, mas decerto alegres, por mais que seja de alívio.
+    </p>
+
+    <p>
+      Então volto ao início, lembrando que com você posso encarnar toda a minha baranguice para fechar essa cartinha de amor para a minha gatinha:
+    </p>
+
+    <p class="horizonte">
+      ALÉM DO <span>HORIZONTE</span><br>
+      EXISTE UM LUGAR<br>
+      BONITO E TRANQUILO<br>
+      PRA GENTE SE AMAR ♥
+    </p>
+
+    <p class="poesia" style="color:var(--sky);">Se você não vem comigo</p>
+    <p class="poesia" style="color:var(--sky);">nada disso tem valor</p>
+    <p class="poesia" style="color:var(--sky);">De que vale o paraíso sem amor</p>
+    <p class="poesia" style="color:var(--sky);">Se você não vem comigo</p>
+    <p class="poesia" style="color:var(--sky);">tudo isso vai ficar</p>
+    <p class="poesia" style="color:var(--sky);">no horizonte esperando por nós dois</p>
+
+    <p class="assinatura">
+      Te amo muito!<br>
+      Sempre♥
+    </p>
+    <p class="assinatura" style="font-size:clamp(1rem,3vw,1.25rem);font-weight:400;margin-top:.2rem;">
+      Por onde for, quero ser seu par<br>
+      Por todos os horizontes<br>
+      <em style="font-size:.95em;color:var(--sepia);">(tranquilos e intranquilos <span style="font-style:normal;filter:grayscale(1) opacity(.7);">😅</span>)</em>
+    </p>
+    <p style="font-family:'Caveat',cursive;font-size:clamp(1rem,3vw,1.2rem);color:var(--sepia);margin-top:1.4rem;line-height:1.8;">
+      Com carinho,
+    </p>
+    <p style="font-family:'Caveat',cursive;font-size:clamp(1.5rem,4vw,2rem);font-weight:700;color:var(--ink);line-height:1.4;">
+      Gatinho
+    </p>
+    <p style="font-family:'Caveat',cursive;font-size:.95rem;color:var(--sepia);opacity:.6;margin-top:.6rem;">
+      05.07.2026 ✦
+    </p>
+  </div>
+
+  <!-- player de áudio discreto -->
+  <div style="margin-top:2rem;display:flex;justify-content:center;">
+    <audio id="audio-horizonte" src="alem_do_horizonte.mp4" style="display:none;"></audio>
+    <div style="font-family:'Caveat',cursive;font-size:1rem;color:var(--sepia);opacity:.65;letter-spacing:.04em;">
+      ♪ Além do Horizonte — Roberto Carlos
+    </div>
+  </div>
+
+  <button class="nav-btn" onclick="irPara('capa')" style="margin-top:1.5rem;">← voltar ao início</button>
+</section>
+
+<script>
+  const secoes = ['capa','sec-video1','sec-parte1','sec-interrupcao','sec-parte2'];
+  let atual = 0;
+
+  function irPara(id) {
+    // esconde tudo
+    secoes.forEach((s, i) => {
+      const el = document.getElementById(s);
+      el.classList.remove('ativa');
+      document.querySelectorAll('.dot')[i].classList.remove('ativo');
+    });
+
+    const idx = secoes.indexOf(id);
+    if (idx === -1) return;
+
+    atual = idx;
+    const el = document.getElementById(id);
+    el.classList.add('ativa');
+    document.querySelectorAll('.dot')[idx].classList.add('ativo');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // pausa todos os vídeos exceto o da seção atual
+    document.querySelectorAll('video').forEach(v => {
+      if (!el.contains(v)) v.pause();
+    });
+
+    // autoplay vídeo nas telas 1 e 3
+    if (id === 'sec-video1' || id === 'sec-interrupcao') {
+      const v = el.querySelector('video');
+      if (v) { v.currentTime = 0; v.play().catch(() => {}); }
+    }
+
+    // autoplay áudio na parte 2, pausa ao sair
+    const audio = document.getElementById('audio-horizonte');
+    if (id === 'sec-parte2') {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
+  }
+
+  // inicia na capa
+  document.getElementById('capa').classList.add('ativa');
+
+  // swipe mobile
+  let startX = 0;
+  document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) < 50) return;
+    if (dx < 0 && atual < secoes.length - 1) irPara(secoes[atual + 1]);
+    if (dx > 0 && atual > 0)                 irPara(secoes[atual - 1]);
+  });
+</script>
+</body>
+</html>
